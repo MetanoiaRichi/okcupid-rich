@@ -1,0 +1,239 @@
+html {
+    width: 100vw;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    &, *:not(i) {
+        word-break: break-word;
+        font-weight: normal !important;
+    }
+
+    body#okcupid {
+        width: 100%;
+        min-height: 100vh;
+        overflow-x: hidden;
+
+        main {
+            #okc_landing_page {
+                @apply flex flex-col relative md:min-h-[766px] px-10 md:px-14 lg:px-16 items-center;
+
+                [class*="okc_landing_img"],
+                [class*="okc_landing_mob_img"] {
+                    @apply hidden object-cover;
+                }
+
+                [class*="okc_landing_img"] {
+                    @apply absolute transition bottom-0 right-0 h-auto w-full md:h-[90%] md:w-auto;
+                }
+
+                &.is_current_banner_1 {
+                    @apply bg-[#5DA3FE];
+
+                    .okc_landing_img_1,
+                    .okc_landing_mob_img_1 {
+                        @apply block;
+                    }
+                }
+        
+                &.is_current_banner_2 {
+                    @apply bg-[#2681F6];
+
+                    .okc_landing_img_2,
+                    .okc_landing_mob_img_2 {
+                        @apply block;
+                    }
+                }
+        
+                &.is_current_banner_3 {
+                    @apply bg-[#02C2F1];
+
+                    .okc_landing_img_3,
+                    .okc_landing_mob_img_3 {
+                        @apply block;
+                    }
+                }
+        
+                &.is_current_banner_4 {
+                    @apply bg-[#00C4CF];
+                    
+                    .okc_landing_img_4,
+                    .okc_landing_mob_img_4 {
+                        @apply block;
+                    }
+                }
+            }
+        
+            #landing_headline_text {
+                -webkit-text-stroke: 2px;
+                -webkit-text-stroke-color: #000;
+                text-shadow: -1px 1px #000, -2px 2px #000, -3px 3px #000, -4px 4px #000, -5px 5px #000, -6px 6px #000, -7px 7px #000, -8px 8px #000;
+            }
+
+            #okc_footer {
+                .footer_group {
+                    h2 {
+                        @apply tracking-wide mb-2 uppercase text-base leading-7;
+                    }
+            
+                    ul {
+                        li {
+                            @apply text-sm leading-7;
+            
+                            &:not(:first-of-type) {
+                                @apply mt-1.5;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .el-button {
+        @apply rounded-sm;
+
+        &.el-button--primary {
+            background: var(--blue);
+            border: none;
+
+            &:hover {
+                background: var(--violet);
+            }
+        }
+
+        &.nm {
+            height: 48px;
+        }
+
+        &.is-disabled {
+            background: #949aa6 !important;
+            color: white !important;
+        }
+    }
+
+    .el-dialog {
+        @apply rounded-lg w-[90%] max-w-[440px];
+        
+        .el-dialog__header {
+            @apply hidden;
+        }
+
+        .el-dialog__body {
+            i.el-icon-close,
+            i.go_back {
+                font-weight: bold;
+            }
+
+            @apply py-16 px-10;
+        }
+    }
+
+    .el-form {
+        .el-form-item {
+            @apply mb-4;
+
+            .el-form-item__label {
+                @apply text-[color:var(--black)] text-base mb-[6px];
+            }
+
+            &:last-child {
+                @apply mb-0;
+            }
+        }
+    }
+    
+    .el-input {
+        .el-input__inner {
+            @apply h-[46px] rounded py-[10px] px-[15px] text-[color:var(--black)] text-base bg-white border-[1px] border-[#aeb4bf] shadow;
+
+            &:active,
+            &:focus {
+                @apply border-[2px] border-black #{!important};
+            }
+        }
+    }
+
+    .el-input-number,
+    .el-input {
+        @apply w-full;
+    }
+
+    .el-input-number {
+        .el-input__inner {
+            text-align: left;
+        }
+    }
+
+    .is_bold {
+        font-weight: bold !important;
+    }
+
+    .el-select-dropdown__item {
+        @apply h-10 text-base leading-[40px] font-medium text-[color:var(--black)];
+
+        &.selected {
+            background: var(--black);
+
+            @apply font-semibold text-white;
+        }
+    }
+
+    .el-checkbox {
+        @apply m-0 flex;
+    
+        &.is-checked {
+            .el-checkbox__inner {
+                @apply bg-[color:var(--blue)];
+            }
+        }
+
+        &.is-disabled {
+            @apply opacity-80;
+
+            .el-checkbox__inner::after {
+                @apply border-white;
+            }
+        }
+
+        .el-checkbox__input {
+            @apply pt-1;
+        }
+
+        .el-checkbox__inner {
+            @apply border-[1px] border-[color:var(--blue)] h-5 w-5 #{!important};
+
+            &::after {
+                @apply h-[10px] w-[6px] left-[5px];
+            }
+        }
+
+        .el-checkbox__label {
+            @apply text-[color:var(--black)] text-base pl-5 whitespace-normal text-left #{!important};
+        }
+    }
+
+    .font-light,
+    .font-normal,
+    .font-medium,
+    .font-semibold,
+    .font-bold {
+        font-weight: normal !important;
+    }
+
+    .font-light,
+    .font-normal {
+        font-family: 'GT-Regular';
+    }
+
+    .font-medium {
+        font-family: 'GT-Medium';
+    }
+
+    .font-semibold {
+        font-family: 'GT-Bold';
+    }
+
+    .font-bold {
+        font-family: 'GT-Black';
+    }
+}

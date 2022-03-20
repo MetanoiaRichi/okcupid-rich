@@ -3,12 +3,12 @@
         append-to-body
         :visible.sync="signInDialogVisible"
         :close-on-click-modal="false"
-        @closed="resetValues()"
+        @closed="closeDialog()"
         :close-on-press-escape="false">
 
-        <template v-if="forgotPassword">
+        <section v-show="forgotPassword">
             <div
-                @click="forgotPassword = false" 
+                @click="resetValues()"
                 class="cursor-pointer text-[color:var(--blue)] absolute top-5 left-5">
                 <i class="el-icon-arrow-left go_back text-3xl"></i>
             </div>
@@ -17,23 +17,28 @@
                 Enter your email to reset your password
             </h1>
 
-            <el-form class="mb-8">
-                <el-form-item label="Email" required>
-                    <el-input type="text" v-model="email" placeholder="Email"></el-input>
+            <el-form
+                class="mb-8" 
+                :model="resetEmailForm"
+                :rules="resetEmailFormRule"
+                @submit.native.prevent
+                ref="resetEmailForm">
+                <el-form-item label="Email" prop="email" required>
+                    <el-input type="text" v-model="resetEmailForm.email" placeholder="Email"></el-input>
                 </el-form-item>
             </el-form>
 
             <el-button 
-                :disabled="email.trim() == ''"
-                @click="resetValues()"
+                :disabled="resetEmailForm.email.trim() == ''"
+                @click="submitForm('resetEmailForm')"
                 class="font-semibold tracking-[1px] w-full border-0 text-base h-16 text-white uppercase" type="primary">
                 Reset Password
             </el-button>
-        </template>
+        </section>
 
-        <template v-else-if="loginWithPhone">
+        <section v-show="loginWithPhone">
             <div
-                @click="loginWithPhone = false" 
+                @click="resetValues()" 
                 class="cursor-pointer text-[color:var(--blue)] absolute top-5 left-5">
                 <i class="el-icon-arrow-left go_back text-3xl"></i>
             </div>
@@ -42,22 +47,12 @@
                 What’s your phone number?
             </h1>
 
-            <el-form class="mb-8">
-                <div class="flex items-center">
-                    <el-form-item class="w-[90px] mb-0">
-                        <el-select 
-                            v-model="phonePrefix"
-                            placeholder="Phone Prefix">
-                            <el-option label="+63" :value="0">
-                                Philippines +63
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-
-                    <el-form-item class="ml-5 flex-1 mb-0">
-                        <el-input-number type="number" :min="0" :controls="false" v-model="phone" placeholder="Phone Number"></el-input-number>
-                    </el-form-item>
-                </div>
+            <el-form
+                class="mb-8"
+                @submit.native.prevent>
+                <el-form-item prop="phone">
+                    <vue-tel-input v-model="loginWithPhoneForm.phone"></vue-tel-input>
+                </el-form-item>
             </el-form>
 
             <p class=" text-xs text-gray-500 mb-8 text-center">
@@ -66,35 +61,40 @@
             </p>
 
             <el-button 
-                :disabled="!phone"
+                :disabled="!loginWithPhoneForm.phone"
                 @click="resetValues()"
                 class="font-semibold tracking-[1px] w-full border-0 text-base h-16 text-white uppercase" type="primary">
                 Next
             </el-button>
-        </template>
+        </section>
 
-        <template v-else>
+        <section v-show="!forgotPassword && !loginWithPhone">
             <div
-                @click="resetValues()" 
+                @click="closeDialog()" 
                 class="cursor-pointer text-[color:var(--blue)] absolute top-5 right-5">
                 <i class="el-icon-close text-3xl"></i>
             </div>
 
             <h1 class="text-2xl mb-5 font-semibold text-[color:var(--gray)]">Enter email and password</h1>
 
-            <el-form class="mb-8">
-                <el-form-item label="Email" required>
-                    <el-input type="text" v-model="email" placeholder="Email"></el-input>
+            <el-form
+                class="mb-8" 
+                :model="loginForm"
+                :rules="loginFormFormRules"
+                @submit.native.prevent
+                ref="loginForm">
+                <el-form-item label="Email" prop="email" required>
+                    <el-input type="text" v-model="loginForm.email" placeholder="Email"></el-input>
                 </el-form-item>
 
-                <el-form-item label="Password" required>
-                    <el-input type="password" v-model="password" placeholder="Password"></el-input>
+                <el-form-item label="Password" prop="password" required>
+                    <el-input type="password" v-model="loginForm.password" placeholder="Password"></el-input>
                 </el-form-item>
             </el-form>
 
             <el-button 
-                @click="resetValues()"
-                :disabled="email.trim() == '' || password.trim() == ''"
+                @click="submitForm('loginForm')"
+                :disabled="loginForm.email.trim() == '' || loginForm.password.trim() == ''"
                 class="font-semibold tracking-[1px] w-full border-0 text-base h-16 text-white mb-6 uppercase" type="primary">
                 Next
             </el-button>
@@ -113,11 +113,14 @@
                 type="primary">
                 Log in with phone
             </el-button>
-        </template>
+        </section>
     </el-dialog>
 </template>
 
 <script>
+import { VueTelInput } from 'vue-tel-input';
+import 'vue-tel-input/dist/vue-tel-input.css';
+
 export default {
     props: {
         signInDialogVisible: {
@@ -126,25 +129,102 @@ export default {
             default: false
         }
     },
+    components: {
+        VueTelInput,
+    },
     data() {
         return {
             forgotPassword: false,
             loginWithPhone: false,
-            email: '',
-            password: '',
-            phone: '',
-            phonePrefix: 0,
+            resetEmailForm: {
+				email: '',
+			},
+            loginForm: {
+				email: '',
+                password: '',
+			},
+            loginWithPhoneForm: {
+                phone: '',
+			},
+            resetEmailFormRule: {
+				email: [
+                    {
+						required: true,
+						message: "Please input an email",
+						trigger: "blur",
+					},
+					{
+                        pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+						message: "Please input a valid email",
+						trigger: "blur",
+					},
+				],
+            },
+            loginFormFormRules: {
+				email: [
+                    {
+						required: true,
+						message: "Please input an email",
+						trigger: "blur",
+					},
+					{
+                        pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+						message: "Please input a valid email",
+						trigger: "blur",
+					},
+				],
+                password: [
+                    {
+						required: true,
+						message: "Please input a password",
+                        trigger: "blur",
+                    },
+                    {
+						min: 6,
+						message: "Password length should at least be 6",
+                        trigger: "blur",
+                    },
+				],
+            },
         }
     },
     methods: {
-        resetValues() {
+        closeDialog() {
+            this.resetValues()
             this.$emit('close-dialog');
-            this.email = '';
-            this.password = '';
-            this.phone = '';
+        },
+
+        resetValues() {
+            this.resetEmailForm = {
+				email: '',
+			}
+
+            this.loginForm = {
+				email: '',
+                password: '',
+			}
+
+            this.loginWithPhoneForm = {
+                phone: '',
+			}
+
             this.forgotPassword = false;
             this.loginWithPhone = false;
-        }
-    }
+        },
+
+		submitForm(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    if(formName == 'loginForm') {
+                        this.closeDialog()
+                    } else {
+                        this.resetValues()
+                    }
+                } else {
+                    return false;
+                }
+            });
+		},
+	},
 }
 </script>

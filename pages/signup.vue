@@ -20,9 +20,15 @@
                     <h1 class="text-3xl font-semibold text-[color:var(--gray)]">Welcome! <br class="md:hidden">Who are you?</h1>
                 </div>
 
-                <el-form class="mb-28">
-                    <el-form-item label="Email" required>
-                        <el-input type="text" v-model="email" placeholder="Email"></el-input>
+                <el-form 
+                    class="mb-28" 
+                    :model="emailForm"
+                    :rules="emailFormRule"
+                    @submit.native.prevent
+                    ref="emailForm">
+
+                    <el-form-item label="Email" prop="email" required>
+                        <el-input type="text" v-model="emailForm.email" placeholder="Email"></el-input>
                     </el-form-item>
 
                     <el-form-item>
@@ -35,8 +41,8 @@
                 </el-form>
 
                 <el-button 
-                    :disabled="email.trim() == ''"
-                    @click="isStepTwo = true"
+                    :disabled="emailForm.email.trim() == ''"
+                    @click="submitForm('emailForm')"
                     class="font-semibold tracking-[1px] w-full border-0 text-base h-16 text-white uppercase" type="primary">
                     Next
                 </el-button>
@@ -54,19 +60,23 @@
                     <h1 class="text-3xl font-semibold text-[color:var(--gray)]">Create a password</h1>
                 </div>
 
-                <el-form class="mb-28">
-                    <el-form-item label="Password" required>
-                        <el-input type="password" v-model="password" placeholder="6 characters minimum"></el-input>
+                <el-form
+                    class="mb-28" 
+                    :model="passwordForm"
+                    @submit.native.prevent
+                    :rules="passwordFormRule"
+                    ref="emailForm">
+                    <el-form-item label="Password" prop="password" required>
+                        <el-input type="password" v-model="passwordForm.password" placeholder="6 characters minimum"></el-input>
                     </el-form-item>
                 </el-form>
 
-                <NuxtLink to="/" :event="password.length < 6 ? '' : 'click'">
-                    <el-button 
-                        :disabled="password.length < 6"
-                        class="font-semibold tracking-[1px] w-full border-0 text-base h-16 text-white uppercase" type="primary">
-                        Sign up
-                    </el-button>
-                </NuxtLink>
+                <el-button 
+                    :disabled="passwordForm.password.length < 6"
+                    @click="submitForm()"
+                    class="font-semibold tracking-[1px] w-full border-0 text-base h-16 text-white uppercase" type="primary">
+                    Sign up
+                </el-button>
             </div>
         </div>
     </div>
@@ -81,8 +91,58 @@ export default {
             password: '',
             promotions: false,
             isStepTwo: false,
+            emailForm: {
+				email: '',
+			},
+            emailFormRule: {
+				email: [
+                    {
+						required: true,
+						message: "Please input an email",
+						trigger: "blur",
+					},
+					{
+                        pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+						message: "Please input a valid email",
+						trigger: "blur",
+					},
+				],
+            },
+            passwordForm: {
+				password: '',
+			},
+            passwordFormRule: {
+				password: [
+                    {
+						required: true,
+						message: "Please input a password",
+                        trigger: "blur",
+                    },
+                    {
+						min: 6,
+						message: "Password length should at least be 6",
+                        trigger: "blur",
+                    },
+				],
+            }
         }
     },
+    methods: {
+		submitForm(formName) {
+            if(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.isStepTwo = true;
+                    } else {
+                        return false;
+                    }
+                });
+            }
+            else {
+                this.$router.push('/');
+            }
+		},
+	},
 };
 </script>
 

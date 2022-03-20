@@ -142,19 +142,61 @@ html {
         }
     }
     
-    .el-input {
-        .el-input__inner {
-            @apply h-[46px] rounded py-[10px] px-[15px] text-[color:var(--black)] text-base bg-white border-[1px] border-[#aeb4bf] shadow;
+    .el-input .el-input__inner,
+    .vue-tel-input {
+        @apply h-[46px] rounded text-[color:var(--black)] text-base bg-white border-[1px] border-[#aeb4bf];
 
-            &:active,
-            &:focus {
-                @apply border-[2px] border-black #{!important};
+        &:active,
+        &:focus,
+        &:focus-within {
+            @apply border-[2px] border-black #{!important};
+        }
+    }
+
+    .el-input .el-input__inner {
+        @apply py-[10px] px-[15px] shadow;
+    }
+
+    .vue-tel-input {
+        @apply shadow-none relative;
+
+        .vti__dropdown {
+            position: unset;
+        }
+
+        .vti__dropdown-list {
+            @apply w-full max-w-full;
+        }
+
+        .vti__dropdown-item {
+            @apply flex items-center h-[40px];
+
+            .vti__flag-wrapper {
+                @apply shrink-0 mr-4 flex items-center w-auto;
+
+                .vti__flag {
+                    @apply m-0;   
+                }
+            }
+
+            strong {
+                @apply flex-1 pr-5 whitespace-nowrap overflow-hidden text-ellipsis;
+            }
+
+            span {
+                @apply shrink-0;
+            }
+
+            &.highlighted {
+                @apply bg-[#c5dfff];
             }
         }
     }
 
+
     .el-input-number,
-    .el-input {
+    .el-input,
+    .vue-tel-input {
         @apply w-full;
     }
 
@@ -162,6 +204,10 @@ html {
         .el-input__inner {
             text-align: left;
         }
+    }
+
+    .el-form-item__error {
+        @apply relative text-left leading-normal pt-[10px] text-sm;
     }
 
     .is_bold {
